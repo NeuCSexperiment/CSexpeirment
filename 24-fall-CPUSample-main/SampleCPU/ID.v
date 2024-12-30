@@ -145,7 +145,9 @@ module ID(
     wire inst_ori, inst_lui, inst_addiu, inst_beq;
     wire inst_subu, inst_jr, inst_jal, inst_addu;
     wire inst_bne, inst_sll, inst_or, inst_xor , inst_lw, inst_sw;
+    wire inst_and,inst_nor,inst_andi;
     wire inst_sltiu, inst_lb, inst_lbu, inst_lh;
+    wire inst_srl,inst_sra;
     wire inst_lhu, inst_sb, inst_sh;
     wire inst_add, inst_addi;
     wire inst_sub, inst_slt, inst_slti, inst_sltu;//???
@@ -179,6 +181,13 @@ module ID(
     assign inst_lui     = op_d[6'b00_1111];
     assign inst_addiu   = op_d[6'b00_1001];
     assign inst_beq     = op_d[6'b00_0100];
+
+    assign inst_and     = op_d[6'b00_0000] & func_d[6'b10_0100]; 
+    assign inst_andi    = op_d[6'b00_1100];
+    assign inst_nor     = op_d[6'b00_0000] & func_d[6'b10_0111];
+    assign inst_sra     = op_d[6'b00_0000] & func_d[6'b00_0011];
+    assign inst_srav     = op_d[6'b00_0000] & func_d[6'b00_0111];
+    assign inst_srl     = op_d[6'b00_0000] & func_d[6'b00_0010];
 
     assign inst_subu    = op_d[6'b00_0000] & func_d[6'b10_0011];
     assign inst_jr      = op_d[6'b00_0000] & func_d[6'b00_1000];
@@ -236,13 +245,13 @@ module ID(
     assign op_sub = inst_subu | inst_sub;
     assign op_slt = inst_slt | inst_slti;
     assign op_sltu = inst_sltu | inst_sltiu;
-    assign op_and = 1'b0;
-    assign op_nor = 1'b0;
+    assign op_and = inst_and | inst_andi;
+    assign op_nor = inst_nor;
     assign op_or = inst_ori | inst_or;
     assign op_xor = inst_xor;
     assign op_sll = inst_sll;
-    assign op_srl = 1'b0;
-    assign op_sra = 1'b0;
+    assign op_srl = inst_srl;
+    assign op_sra = inst_sra;
     assign op_lui = inst_lui;
 
     assign alu_op = {op_add, op_sub, op_slt, op_sltu,

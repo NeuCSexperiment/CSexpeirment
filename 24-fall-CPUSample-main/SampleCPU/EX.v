@@ -58,6 +58,7 @@ module EX(
     wire sel_rf_res;
     wire [31:0] rf_rdata1, rf_rdata2;
     reg is_in_delayslot;
+    wire [3:0] byte_sel;
 
     assign {
         ex_pc,          // 148:117
@@ -139,11 +140,14 @@ module EX(
         inst_lw
     };
 
-    assign data_ram_sel = inst_lw | inst_sw ? 4'b1111 : 4'b0000;
+     assign data_ram_sel =   inst_sb | inst_lb | inst_lbu ? byte_sel :
+                            inst_sh | inst_lh | inst_lhu ? {{2{byte_sel[2]}},{2{byte_sel[0]}}} :
+                            inst_sw | inst_lw ? 4'b1111 : 4'b0000; 
     assign data_sram_en = data_ram_en;
     assign data_sram_wen = {4{data_ram_wen}} & data_ram_sel;
     assign data_sram_addr = ex_result;
-    assign data_sram_wdata = rf_rdata2;
+    assign data_sram_wdata  =   inst_sb ? {4{rf_rdata2[7:0]}}  :
+                                inst_sh ? {2{rf_rdata2[15:0]}} : rf_rdata2;
 
     // MUL part
     wire [63:0] mul_result;
