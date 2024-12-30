@@ -8,7 +8,7 @@ module EX(
     input wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
     //lw sw
     input wire [`LoadBus-1:0] id_load_bus,
-    input wire [`SaveBus-1:0 id_save_bus,]
+    input wire [`SaveBus-1:0] id_save_bus,
 
     output wire [`EX_TO_MEM_WD-1:0] ex_to_mem_bus,
     output wire [`EX_TO_RF_WD-1:0] ex_to_rf_bus,
@@ -17,8 +17,8 @@ module EX(
     output wire [3:0] data_sram_wen,
     output wire [31:0] data_sram_addr,
     output wire [31:0] data_sram_wdata,
-    output wire [3:0] data_ram_sel.
-    output wire [`LoadBus-1:0] ex_load_bus,
+    output wire [3:0] data_ram_sel,
+    output wire [`LoadBus-1:0] ex_load_bus
 );
 
     reg [`ID_TO_EX_WD-1:0] id_to_ex_bus_r;
