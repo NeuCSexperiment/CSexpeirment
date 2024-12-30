@@ -18,7 +18,7 @@ module ID(
     input wire [`MEM_TO_RF_WD-1:0] mem_to_rf_bus,
 
     output wire [`LoadBus-1:0] id_load_bus,
-    output wire [`SaveBus-1:0] id_save_bus,//???
+    output wire [`SaveBus-1:0] id_save_bus,
     output wire [`ID_TO_EX_WD-1:0] id_to_ex_bus,
 
     output wire [`BR_WD-1:0] br_bus 
