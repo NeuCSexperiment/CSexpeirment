@@ -95,7 +95,9 @@ module ID(
         lo_wdata
     } = ex_hi_lo_bus;
     hi_lo_reg u_hi_lo_reg(
-        .clk    (clk    ),
+        .clk      (clk        ),
+        .hi_we    (hi_we      ),
+        .lo_we    (lo_we      ),
         .hi_we  (hi_we        ),
         .lo_we  (lo_we        ),
         .hi_wdata (hi_wdata   ),
@@ -153,7 +155,13 @@ module ID(
         .rdata2 (rdata2 ),
         .we     (wb_rf_we     ),
         .waddr  (wb_rf_waddr  ),
-        .wdata  (wb_rf_wdata  )
+        .wdata  (wb_rf_wdata  )//,
+        // .hi_we    (hi_we      ),
+        // .lo_we    (lo_we      ),
+        // .hi_wdata (hi_wdata   ),
+        // .lo_wdata (lo_wdata   ),
+        // .hi_rdata (hi_rdata   ),
+        // .lo_rdata (lo_rdata   )
     );
 
     assign opcode = inst[31:26];
@@ -193,10 +201,10 @@ module ID(
                     // 如果寄存器 rs 中的值小，则寄存器 rt 置 1；否则寄存器 rt 置 0。
 
 
-    wire inst_mult;
-    wire inst_multu;
-    wire inst_div;
-    wire inst_divu;
+    wire inst_mult;     // 有符号乘法，寄存器 rs 的值乘以寄存器 rt 的值，乘积的低半部分和高半部分分别写入 LO 寄存器和 HI 寄存器。
+    wire inst_multu;    // 无符号乘法，寄存器 rs 的值乘以寄存器 rt 的值，乘积的低半部分和高半部分分别写入 LO 寄存器和 HI 寄存器。
+    wire inst_div;      // 有符号除法，寄存器 rs 的值除以寄存器 rt 的值，商写入 LO 寄存器中，余数写入 HI 寄存器中。
+    wire inst_divu;     // 无符号除法，寄存器 rs 的值除以寄存器 rt 的值，商写入 LO 寄存器中，余数写入 HI 寄存器中。
 
 // 逻辑运算指令
     wire inst_ori;  // 寄存器 rs 中的值与 0 扩展至 32 位的立即数 imm 按位逻辑或，结果写入寄存器 rt 中。
