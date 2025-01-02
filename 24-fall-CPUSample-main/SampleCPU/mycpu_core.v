@@ -35,6 +35,9 @@ module mycpu_core(
     wire [3:0] data_ram_sel;
     wire [`SaveBus-1:0] id_save_bus;
     wire [`StallBus-1:0] stall;
+    wire ex_id;
+    wire [71:0] id_hi_lo_bus;
+    wire [65:0] ex_hi_lo_bus;
 
 
     IF u_IF(
@@ -64,6 +67,8 @@ module mycpu_core(
         .id_load_bus     (id_load_bus     ),
         .id_save_bus     (id_save_bus     ),
         .br_bus          (br_bus          ),
+        .id_hi_lo_bus    (id_hi_lo_bus    ),
+        .ex_hi_lo_bus    (ex_hi_lo_bus    )
     );
 
     EX u_EX(
@@ -92,7 +97,9 @@ module mycpu_core(
         .data_sram_rdata (data_sram_rdata ),
         .data_ram_sel    (data_ram_sel    ),
         .mem_to_wb_bus   (mem_to_wb_bus   ),
-        .mem_to_rf_bus   (mem_to_rf_bus   )
+        .data_sram_wdata (data_sram_wdata ),
+        .id_hi_lo_bus    (id_hi_lo_bus    ),
+        .ex_hi_lo_bus    (ex_hi_lo_bus    )
     );
     
     WB u_WB(
