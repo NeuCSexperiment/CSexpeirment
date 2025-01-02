@@ -176,104 +176,136 @@ module ID(
         .out (rt_d )
     );
 
-    // 加（可产生溢出例外）
-    assign inst_add     = op_d[6'b00_0000] & func_d[6'b10_0000];    
-    // 加立即数（可产生溢出例外）
-    assign inst_addi    = op_d[6'b00_1000];    
-    // 加（不产生溢出例外）
-     assign inst_addu    = op_d[6'b00_0000] & func_d[6'b10_0001];   
-    // 加立即数（不产生溢出例外）
-    assign inst_addiu   = op_d[6'b00_1001];
+// """算术运算指令"""
+
+// 加（可产生溢出例外）
+assign inst_add     = op_d[6'b00_0000] & func_d[6'b10_0000];    
+// 加立即数（可产生溢出例外）
+assign inst_addi    = op_d[6'b00_1000];    
+// 加（不产生溢出例外）
+assign inst_addu    = op_d[6'b00_0000] & func_d[6'b10_0001];   
+// 加立即数（不产生溢出例外）
+assign inst_addiu   = op_d[6'b00_1001];    
+// 减（可产生溢出例外）
+assign inst_sub     = op_d[6'b00_0000] & func_d[6'b10_0010];    
+// 减（不产生溢出例外）
+assign inst_subu    = op_d[6'b00_0000] & func_d[6'b10_0011];    
+// 有符号小于置 1
+assign inst_slt     = op_d[6'b00_0000] & func_d[6'b10_1010];    
+// 有符号小于立即数设置 1
+assign inst_slti    = op_d[6'b00_1010];    
+// 无符号小于设置 1
+assign inst_sltu    = op_d[6'b00_0000] & func_d[6'b10_1011];    
+// 无符号小于设置 1
+assign inst_sltiu   = op_d[6'b00_1011];    
+// 有符号字除
+// 无符号字除
+// 有符号字乘
+// 无符号字乘
+
+// """逻辑运算指令"""
+
+// 位与
+assign inst_and     = op_d[6'b00_0000] & func_d[6'b10_0100]; 
+// 立即数位与
+assign inst_andi    = op_d[6'b00_1100]; 
+// 寄存器高半部分置立即数
+assign inst_lui     = op_d[6'b00_1111];    
+// 位或非
+assign inst_nor     = op_d[6'b00_0000] & func_d[6'b10_0111]; 
+// 位或
+assign inst_or      = op_d[6'b00_0000] & func_d[6'b10_0101];   
+// 立即数位或
+assign inst_ori     = op_d[6'b00_1101];    
+// 位异或
+assign inst_xor     = op_d[6'b00_0000] & func_d[6'b10_0110];    
+// 立即数位异或
+assign inst_xori    = op_d[6'b00_1110];
 
 
-    // 减（可产生溢出例外）
-    assign inst_sub     = op_d[6'b00_0000] & func_d[6'b10_0010];    
-    // 减（不产生溢出例外）
-    assign inst_subu    = op_d[6'b00_0000] & func_d[6'b10_0011];    
-    // 有符号小于置 1
-    assign inst_slt     = op_d[6'b00_0000] & func_d[6'b10_1010];    
-    // 有符号小于立即数设置 1
-    assign inst_slti    = op_d[6'b00_1010];    
-    // 无符号小于设置 1
-    assign inst_sltu    = op_d[6'b00_0000] & func_d[6'b10_1011];    
-    // 无符号小于设置 1
-    assign inst_sltiu   = op_d[6'b00_1011];
+// """移位指令"""
 
-    // 寄存器高半部分置立即数
-    assign inst_lui     = op_d[6'b00_1111];    
-    // 位或非
-// assign inst_nor     = op_d[6'b00_0000] & func_d[6'b10_0111]; 
-    // 位或
-    assign inst_or      = op_d[6'b00_0000] & func_d[6'b10_0101];   
-    // 立即数位或
-    assign inst_ori     = op_d[6'b00_1101];    
-    // 位异或
-    assign inst_xor     = op_d[6'b00_0000] & func_d[6'b10_0110];
+// 立即数逻辑左移
+assign inst_sll     = op_d[6'b00_0000] & func_d[6'b00_0000];    
+// 变量逻辑左移
+assign inst_sllv     = op_d[6'b00_0000] & func_d[6'b00_0100];
+// 立即数算术右移
+assign inst_sra     = op_d[6'b00_0000] & func_d[6'b00_0011];
+// 变量算术右移
+assign inst_srav     = op_d[6'b00_0000] & func_d[6'b00_0111];
+// 立即数逻辑右移
+assign inst_srl     = op_d[6'b00_0000] & func_d[6'b00_0010];
+// 变量逻辑右移
+assign inst_srlv     = op_d[6'b00_0000] & func_d[6'b00_0110];
 
 
- // """移位指令"""
-    // 立即数逻辑左移
-    assign inst_sll     = op_d[6'b00_0000] & func_d[6'b00_0000];
-    // 立即数算术右移
-    assign inst_sla     = op_d[6'b00_0000] & func_d[6'b00_0011];
-    // 变量算术右移
-    assign inst_slav     = op_d[6'b00_0000] & func_d[6'b00_0111];
-    // 立即数逻辑右移
-    assign inst_srl     = op_d[6'b00_0000] & func_d[6'b00_0010];
-    // 变量逻辑右移
-    assign inst_srlv     = op_d[6'b00_0000] & func_d[6'b00_0110];
+// """分支跳转指令"""
 
-    // """分支跳转指令"""
-    // 相等转移
-    assign inst_beq     = op_d[6'b00_0100];
-    // 不等转移
-    assign inst_bne     = op_d[6'b00_0101];  
-    // 大于等于 0 转移
-// assign inst_bnez     = op_d[6'b00_0001] & rt_d[6'b0_0001]; 
-    // 大于 0 转移
-// assign inst_bgtz     = op_d[6'b00_0111] & rt_d[6'b0_0000]; 
-    // 小于等于 0 转移
-// assign inst_blez     = op_d[6'b00_0110] & rt_d[6'b0_0000]; 
-    // 小于 0 转移
-// assign inst_bltz     = op_d[6'b00_0001] & rt_d[6'b0_0000];
-    // 小于 0 调用子程序并保存返回地址
-// assign inst_bgtzal     = op_d[6'b00_0001] & rt_d[6'b1_0000];
-    // 大于等于 0 调用子程序并保存返回地址
-// assign inst_bgezal     = op_d[6'b00_0001] & rt_d[6'b1_0001];
-    // 无条件直接跳转
-// assign inst_j     = op_d[6'b00_0010];
-    // 无条件直接跳转至子程序并保存返回地址
+// 相等转移
+assign inst_beq     = op_d[6'b00_0100];
+// 不等转移
+assign inst_bne     = op_d[6'b00_0101];  
+// 大于等于 0 转移
+assign inst_bnez     = op_d[6'b00_0001] & rt_d[6'b0_0001]; 
+// 大于 0 转移
+assign inst_bgtz     = op_d[6'b00_0111] & rt_d[6'b0_0000]; 
+// 小于等于 0 转移
+assign inst_blez     = op_d[6'b00_0110] & rt_d[6'b0_0000]; 
+// 小于 0 转移
+assign inst_bltz     = op_d[6'b00_0001] & rt_d[6'b0_0000];
+// 小于 0 调用子程序并保存返回地址
+assign inst_bgtzal     = op_d[6'b00_0001] & rt_d[6'b1_0000];
+// 大于等于 0 调用子程序并保存返回地址
+assign inst_bgezal     = op_d[6'b00_0001] & rt_d[6'b1_0001];
 
-    assign inst_jal     = op_d[6'b00_0011];
-    // 无条件寄存器跳转
-    assign inst_jr      = op_d[6'b00_0000] & func_d[6'b00_1000];
-    // 无条件寄存器跳转至子程序并保存返回地址下
-// assign inst_jral      = op_d[6'b00_0000]  & rt_d[6'b0_0000] & func_d[6'b00_1001];
+assign inst_bgez = op_d[6'b00_0001] & rt_d[6'b0_0001];
+
+// 无条件直接跳转
+assign inst_j     = op_d[6'b00_0010];
+// 无条件直接跳转至子程序并保存返回地址
+assign inst_jal     = op_d[6'b00_0011];
+// 无条件寄存器跳转
+    assign inst_jr      = op_d[6'b00_0000] & func_d[6'b00_1000] & rt_d[5'b0_0000] & rd_d[5'b0_0000] & sa_d[5'b0_0000];
+// 无条件寄存器跳转至子程序并保存返回地址下
+assign inst_jalr      = op_d[6'b00_0000]  & rt_d[6'b0_0000] & func_d[6'b00_1001];
+// 小于 0 调用子程序并保存返回地址
+assign inst_bltzal    = op_d[6'b00_0001] & rt_d[6'b1_0000];
+
+
+// """数据移动指令"""
+// HI 寄存器至通用寄存器
+// LO 寄存器至通用寄存器
+// 通用寄存器至 HI 寄存器
+// 通用寄存器至 LO 寄存器
 
 // """访存指令"""   
-    // 取字节有符号扩展
-    assign inst_lb      = op_d[6'b10_0000];
-    // 取字节无符号扩展
-    assign inst_lbu     = op_d[6'b10_0100];
-    // 取半字有符号扩展
-    assign inst_lh      = op_d[6'b10_0001];
-    // 取半字无符号扩展
-    assign inst_lhu     = op_d[6'b10_0101];
-    // 取字
-    assign inst_lw      = op_d[6'b10_0011];
-    // 存字节
-    assign inst_sb      = op_d[6'b10_1000];
-    // 存半字
-    assign inst_sh      = op_d[6'b10_1001];
 
-    // 存字
-    assign inst_sw      = op_d[6'b10_1011];
+// 取字节有符号扩展
+assign inst_lb      = op_d[6'b10_0000];
+// 取字节无符号扩展
+assign inst_lbu     = op_d[6'b10_0100];
+// 取半字有符号扩展
+assign inst_lh      = op_d[6'b10_0001];
+// 取半字无符号扩展
+assign inst_lhu     = op_d[6'b10_0101];
+// 取字
+assign inst_lw      = op_d[6'b10_0011];
+// 存字节
+assign inst_sb      = op_d[6'b10_1000];
+// 存半字
+assign inst_sh      = op_d[6'b10_1001];
+// 存字
+assign inst_sw      = op_d[6'b10_1011];
 
 
 
     // rs to reg1
-    assign sel_alu_src1[0] = inst_ori | inst_addiu | inst_subu | inst_jr | inst_addu | inst_or | inst_xor | inst_lw | inst_sw;
-
+    assign sel_alu_src1[0] =    inst_lw | inst_sw |inst_lb| inst_lbu  | inst_lh | inst_lhu| inst_sb | inst_sh |
+                                    inst_ori | inst_addiu | inst_or | inst_xor | inst_and  | inst_andi| inst_nor | inst_xori |
+                                    inst_sub | inst_subu | inst_add | inst_addi | inst_addu |
+                                    inst_jr | inst_bgezal | inst_bltzal |
+                                    inst_slti | inst_or | inst_srav | inst_sltu | inst_slt | inst_sltiu | inst_sllv| inst_srlv 
+                                    ;
     // pc to reg1
     assign sel_alu_src1[1] = inst_jal;
 
@@ -322,17 +354,27 @@ module ID(
 
 
     // regfile store enable
-    assign rf_we = inst_ori | inst_lui | inst_addiu | inst_subu | inst_jal | inst_addu| inst_sll | 
-                    inst_or | inst_xor | inst_lw | 
-                    inst_add | inst_addi | inst_sub | inst_slt | inst_slti | inst_sltu | inst_sltiu;
+    assign rf_we =  inst_ori | inst_lui | inst_addiu | inst_subu | inst_addu | inst_add | inst_addi | inst_sub |
+                    inst_jr | inst_jal |  inst_sll | inst_sllv | inst_sra | inst_srl | inst_srlv | inst_srav|
+                    inst_or | inst_xor | inst_xori | inst_and | inst_andi | inst_nor |
+                    inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu |
+                    inst_slt | inst_slti | inst_sltu | inst_sltiu| inst_jalr
+                     ;
 
 
     // store in [rd]
-    assign sel_rf_dst[0] = inst_subu | inst_addu | inst_sll | inst_or | inst_xor | inst_add | inst_sub | inst_slt | inst_sltu;
-    // store in [rt] 
-    assign sel_rf_dst[1] = inst_ori | inst_lui | inst_addiu | inst_lw | inst_addi | inst_slti | inst_sltiu;
+    assign sel_rf_dst[0] =  inst_sub |inst_subu | inst_addu |  inst_add |
+                            inst_and | inst_nor | inst_or | inst_xor |
+                            inst_slt | inst_sltu |
+                            inst_jalr | 
+                            inst_sra | inst_srl | inst_srlv | inst_srav | inst_sll | inst_sllv ;
+    assign sel_rf_dst[1] = inst_ori | inst_lui | inst_addiu | inst_lw | inst_addi | inst_slti | inst_sltiu|
+                            inst_andi | inst_xori |      
+                            inst_lb |inst_lbu | inst_lh | inst_lhu
+                            ;
+
     // store in [31]
-    assign sel_rf_dst[2] = inst_jal;
+    assign sel_rf_dst[2] = inst_jal | inst_jalr | inst_bltzal | inst_bgezal;
 
     // sel for regfile address
     assign rf_waddr = {5{sel_rf_dst[0]}} & rd 
@@ -371,10 +413,20 @@ module ID(
     assign rs_eq_rt = (ndata1 == ndata2);
 
     assign br_e = inst_beq & rs_eq_rt | inst_jr | inst_jal | inst_bne & ~rs_eq_rt;
-    assign br_addr = (inst_beq ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0) |
-                     (inst_jr ? ndata1 : 32'b0) |
-                     (inst_jal ? {pc_plus_4[31:28],instr_index,2'b0} : 32'b0) |
-                     (inst_bne ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0);
+    assign br_addr = (inst_beq       ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)   |
+                        (inst_jr        ? ndata1 : 32'b0)                                           |
+                        (inst_jal       ? {pc_plus_4[31:28],instr_index,2'b0} : 32'b0)              |
+                        (inst_j         ? ({ pc_plus_4[31:28],inst[25:0],2'b0}) : 32'b0)            |
+                        (inst_jalr      ? ndata1:32'b0)                                             |
+                                               
+                        (inst_bne       ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)   |
+                        (inst_bgez      ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)   |
+                        (inst_bgtz      ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)   |
+                        (inst_blez      ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)   |
+                        (inst_bltz      ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)   |
+                        (inst_bgezal    ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)   |
+                        (inst_bltzal    ? (pc_plus_4 + {{14{inst[15]}},inst[15:0],2'b0}) : 32'b0)
+                        ;
         assign id_load_bus = {
         inst_lb,
         inst_lbu,
