@@ -164,8 +164,6 @@ module ID(
         .clk      (clk        ),
         .hi_we    (hi_we      ),
         .lo_we    (lo_we      ),
-        .hi_we  (hi_we        ),
-        .lo_we  (lo_we        ),
         .hi_wdata (hi_wdata   ),
         .lo_wdata (lo_wdata   ),
         .hi_rdata (hi_rdata   ),
