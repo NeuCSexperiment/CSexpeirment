@@ -233,7 +233,7 @@ module EX(
 
     // DIV part
     wire [63:0] div_result;
-    // wire inst_div, inst_divu;
+    wire inst_div, inst_divu;
     wire div_ready_i;
     reg stallreq_for_div;
     assign stallreq_for_ex = stallreq_for_div;
