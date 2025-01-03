@@ -16,10 +16,13 @@ module EX(
     input wire [71:0] id_hi_lo_bus,
     output wire [65:0] ex_hi_lo_bus,
 
+    output wire stallreq_for_ex,
+
     output wire data_sram_en,
     output wire [3:0] data_sram_wen,
     output wire [31:0] data_sram_addr,
     output wire [31:0] data_sram_wdata,
+    output wire ex_id,
     output wire [3:0] data_ram_sel,
     output wire [`LoadBus-1:0] ex_load_bus
 );
@@ -28,8 +31,8 @@ module EX(
 
     reg [`LoadBus-1:0] id_load_bus_r;
     reg [`SaveBus-1:0] id_save_bus_r;
-
     reg [71:0] id_hi_lo_bus_r;
+
     always @ (posedge clk) begin
         if (rst) begin
             id_to_ex_bus_r <= `ID_TO_EX_WD'b0;
@@ -129,9 +132,14 @@ module EX(
         .alu_result  (alu_result  )
     );
 
-    // assign ex_result =  inst_mfhi ? hi :
-    //                     inst_mflo ? lo :
-    //                     alu_result;
+    assign ex_result =  inst_mfhi ? hi :
+                        inst_mflo ? lo :
+                        alu_result;
+
+    decoder_2_4 u_decoder_2_4(
+        .in  (ex_result[1:0]),
+        .out (byte_sel      )
+    );
 
     assign ex_to_mem_bus = {
         ex_pc,          // 75:44
@@ -177,6 +185,8 @@ module EX(
                             inst_sh | inst_lh | inst_lhu ? {{2{byte_sel[2]}},{2{byte_sel[0]}}} :
                             inst_sw | inst_lw ? 4'b1111 : 4'b0000; 
     assign data_sram_en = data_ram_en;
+
+    assign data_sram_wen = {4{data_ram_wen}} & data_ram_sel;
     // assign data_sram_wen = inst_sw ? 4'b1111:
     //                     inst_sb & alu_result[1:0]==2'b00 ? 4'b0001:
     //                     inst_sb & alu_result[1:0]==2'b01 ? 4'b0010:
@@ -187,7 +197,7 @@ module EX(
     //                     4'b0000;
     assign data_sram_addr = ex_result;
     // 根据写地址的最低两位addr[1:0]判断    
-    assign data_sram_wen = {4{data_ram_wen}} & data_ram_sel;
+    
     assign data_sram_wdata  =   inst_sb ? {4{rf_rdata2[7:0]}}  :
                                 inst_sh ? {2{rf_rdata2[15:0]}} : rf_rdata2;
 
@@ -223,6 +233,7 @@ module EX(
 
     // DIV part
     wire [63:0] div_result;
+    // wire inst_div, inst_divu;
     wire div_ready_i;
     reg stallreq_for_div;
     assign stallreq_for_ex = stallreq_for_div;
