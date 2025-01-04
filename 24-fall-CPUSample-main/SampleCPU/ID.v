@@ -223,16 +223,20 @@ module ID(
     wire inst_ori;  // 寄存器 rs 中的值与 0 扩展至 32 位的立即数 imm 按位逻辑或，结果写入寄存器 rt 中。
     wire inst_lui;  // 将 16 位立即数 imm 写入寄存器 rt 的高 16 位，寄存器 rt 的低 16 位置 0。
     wire inst_or;   // 寄存器 rs 中的值与寄存器 rt 中的值按位逻辑或，结果写入寄存器 rd 中。
-    wire inst_xor;  // 寄存器 rs 中的值与 0 扩展至 32 位的立即数 imm 按位逻辑或，结果写入寄存器 rt 中。
+    wire inst_xor;  // 寄存器 rs 中的值与寄存器 rt 中的值按位逻辑异或，结果写入寄存器 rd 中。
+    wire inst_xori; // 寄存器 rs 中的值与 0 扩展至 32 位的立即数 imm 按位逻辑或，结果写入寄存器 rt 中。
     wire inst_and;  // 寄存器 rs 中的值与寄存器 rt 中的值按位逻辑与，结果写入寄存器 rd 中。
     wire inst_nor;  // 寄存器 rs 中的值与寄存器 rt 中的值按位逻辑或，结果写入寄存器 rd 中。
     wire inst_andi; // 寄存器 rs 中的值与 0 扩展至 32 位的立即数 imm 按位逻辑与，结果写入寄存器 rt 中。
 
 // 移位指令
     wire inst_sll;  // 由立即数 sa 指定移位量，对寄存器 rt 的值进行逻辑左移，结果写入寄存器 rd 中。
-    // wire inst_sla;  // 由立即数 sa 指定移位量，对寄存器 rt 的值进行算术左移，结果写入寄存器 rd 中。
+    wire inst_sla;  // 由立即数 sa 指定移位量，对寄存器 rt 的值进行算术左移，结果写入寄存器 rd 中。
     wire inst_srl;  // 由立即数 sa 指定移位量，对寄存器 rt 的值进行逻辑右移，结果写入寄存器 rd 中。
     wire inst_sra;  // 由立即数 sa 指定移位量，对寄存器 rt 的值进行算术右移，结果写入寄存器 rd 中。
+    wire inst_sllv; // 寄存器 rs 中的值的低 5 位指定移位量，对寄存器 rt 的值进行逻辑左移，结果写入寄存器 rd 中。
+    wire inst_srav; // 寄存器 rs 中的值的低 5 位指定移位量，对寄存器 rt 的值进行算术右移，结果写入寄存器 rd 中。
+    wire inst_srlv; // 寄存器 rs 中的值的低 5 位指定移位量，对寄存器 rt 的值进行逻辑右移，结果写入寄存器 rd 中。
 
 // 分支跳转指令
     wire inst_beq;  // 如果寄存器 rs 的值等于寄存器 rt 的值则转移，否则顺序执行。
@@ -243,6 +247,27 @@ module ID(
     wire inst_jr;   // 无条件跳转。跳转目标为寄存器 rs 中的值。
     wire inst_jal;  // 无条件跳转。跳转目标由该分支指令对应的延迟槽指令的 PC 的最高 4 位与立即数 instr_index 左移2 位后的值拼接得到。
                     // 同时将该分支对应延迟槽指令之后的指令的 PC 值保存至第 31 号通用寄存器中。
+    
+    wire inst_jalr; // 无条件跳转。跳转目标为寄存器 rs 中的值。
+                    // 同时将该分支对应延迟槽指令之后的指令的 PC 值保存至第 31 号通用寄存器中。
+
+    wire inst_j;    // 无条件跳转。跳转目标由该分支指令对应的延迟槽指令的 PC 的最高 4 位与立即数 instr_index 左移2 位后的值拼接得到。
+    wire inst_bltz;
+    wire inst_blez; // 如果寄存器 rs 的值小于等于 0 则转移，否则顺序执行。转移目标由立即数 offset 左移 2 位并进行有
+                    // 符号扩展的值加上该分支指令对应的延迟槽指令的 PC 计算得到。
+    wire inst_bgtz; // 如果寄存器 rs 的值大于 0 则转移，否则顺序执行。转移目标由立即数 offset 左移 2 位并进行有符号
+                    // 扩展的值加上该分支指令对应的延迟槽指令的 PC 计算得到。
+    wire inst_bgez; // 如果寄存器 rs 的值大于等于 0 则转移，否则顺序执行。转移目标由立即数 offset 左移 2 位并进行有
+                    // 符号扩展的值加上该分支指令对应的延迟槽指令的 PC 计算得到。
+    wire inst_bnez;
+
+    wire inst_bgezal;   // 如果寄存器 rs 的值大于等于 0 则转移，否则顺序执行。转移目标由立即数 offset 左移 2 位并进行有
+                        // 符号扩展的值加上该分支指令对应的延迟槽指令的 PC 计算得到。无论转移与否，将该分支对应延
+                        // 迟槽指令之后的指令的 PC 值保存至第 31 号通用寄存器中。
+
+    wire inst_bltzal;   // 如果寄存器 rs 的值小于 0 则转移，否则顺序执行。转移目标由立即数 offset 左移 2 位并进行有符号
+                        // 扩展的值加上该分支指令对应的延迟槽指令的 PC 计算得到。无论转移与否，将该分支对应延迟槽
+                        // 指令之后的指令的 PC 值保存至第 31 号通用寄存器中。
 
 //访存指令
     wire inst_lw;   // 将 base 寄存器的值加上符号扩展后的立即数 offset 得到访存的虚地址，
@@ -398,7 +423,7 @@ module ID(
     assign inst_bgtzal     = op_d[6'b00_0001] & rt_d[5'b1_0000];
     // 大于等于 0 调用子程序并保存返回地址
     assign inst_bgezal     = op_d[6'b00_0001] & rt_d[5'b1_0001];
-
+    // 大于等于 0 转移
     assign inst_bgez = op_d[6'b00_0001] & rt_d[5'b0_0001];
 
     // 无条件直接跳转
@@ -441,7 +466,6 @@ module ID(
     assign inst_sh      = op_d[6'b10_1001];
     // 存字
     assign inst_sw      = op_d[6'b10_1011];
-
 
 
     // rs to reg1
@@ -508,12 +532,15 @@ module ID(
 
     // regfile store enable
     assign rf_we =  inst_ori | inst_lui | inst_addiu | inst_subu | inst_addu | inst_add | inst_addi | inst_sub |
-                    inst_jr | inst_jal |  inst_sll | inst_sllv | inst_sra | inst_srl | inst_srlv | inst_srav|
+                    inst_jr | inst_jal | inst_jalr | inst_bgezal | inst_bltzal |
+                    inst_sll | inst_sllv | inst_sra | inst_srl | inst_srlv | inst_srav |
                     inst_or | inst_xor | inst_xori | inst_and | inst_andi | inst_nor |
                     inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu |
                     inst_slt | inst_slti | inst_sltu | inst_sltiu |
                     inst_mfhi | inst_mflo
+
                     ;
+
 
 
     // store in [rd]
@@ -524,9 +551,12 @@ module ID(
                             inst_sra | inst_srl | inst_srlv | inst_srav | inst_sll | inst_sllv |
                             inst_mfhi | inst_mflo
                             ;
-    assign sel_rf_dst[1] = inst_ori | inst_lui | inst_addiu | inst_lw | inst_addi | inst_slti | inst_sltiu|
+    
+    
+    // store in [rt]
+    assign sel_rf_dst[1] =  inst_ori | inst_lui | inst_addiu | inst_addi | inst_slti | inst_sltiu |
                             inst_andi | inst_xori |      
-                            inst_lb |inst_lbu | inst_lh | inst_lhu
+                            inst_lw | inst_lb |inst_lbu | inst_lh | inst_lhu
                             ;
 
     // store in [31]
