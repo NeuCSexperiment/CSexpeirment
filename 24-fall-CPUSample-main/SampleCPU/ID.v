@@ -20,10 +20,10 @@ module ID(
     input wire [`MEM_TO_RF_WD-1:0] mem_to_rf_bus,
 
     input wire [65:0] ex_hi_lo_bus,
-    output wire [71:0] id_hi_lo_bus,
+    output wire [71:0] id_hi_lo_bus,//to ex
     
     output wire [`LoadBus-1:0] id_load_bus,
-    output wire [`SaveBus-1:0] id_save_bus,
+    output wire [`SaveBus-1:0] id_save_bus,//数据存取信号
 
     output wire stallreq_for_bru,
 
@@ -36,7 +36,7 @@ module ID(
     wire [31:0] inst;
     wire [31:0] id_pc;
     wire ce;
-    reg  flag;
+    reg  flag;//y/n inst_sram_rdata->buf_inst
     reg [31:0] buf_inst;
 
     wire wb_rf_we;
@@ -75,6 +75,7 @@ module ID(
     end
     
     assign inst = ce ? flag ? buf_inst : inst_sram_rdata : 32'b0;
+
     assign {
         ex_rf_we,
         ex_rf_waddr,
@@ -101,7 +102,7 @@ module ID(
     wire [4:0] rs,rt,rd,sa;
     wire [5:0] func;
     wire [15:0] imm;
-    wire [25:0] instr_index;
+    wire [25:0] instr_index;//跳转目标地址（J 型指令）
     wire [19:0] code;
     wire [4:0] base;//基址
     wire [15:0] offset;//偏移
@@ -124,7 +125,7 @@ module ID(
 
     wire [31:0] rdata1, rdata2;
     wire [31:0] ndata1, ndata2;
-
+    //数据前递
     assign ndata1 = ((ex_rf_we && rs == ex_rf_waddr) ? ex_rf_wdata : 32'b0) | 
                    ((!(ex_rf_we && rs == ex_rf_waddr) && (mem_rf_we && rs == mem_rf_waddr)) ? mem_rf_wdata : 32'b0) |
                    ((!(ex_rf_we && rs == ex_rf_waddr) && 
@@ -138,6 +139,7 @@ module ID(
                      !(mem_rf_we && rt == mem_rf_waddr) && (wb_rf_we && rt == wb_rf_waddr)) ? wb_rf_wdata : 32'b0) |
                    (((ex_rf_we && rt == ex_rf_waddr) || (mem_rf_we && rt == mem_rf_waddr) ||
                      (wb_rf_we && rt == wb_rf_waddr)) ? 32'b0 : rdata2);
+
     regfile u_regfile(
     	.clk    (clk    ),
         .raddr1 (rs ),
@@ -500,7 +502,6 @@ module ID(
     assign sel_alu_src2[3] = inst_ori | inst_andi | inst_xori;
 
 
-
     assign op_add =  inst_add | inst_addi | inst_addiu |  inst_addu |  inst_add | inst_addi |
                     inst_jal | inst_jalr | inst_bltzal | inst_bgezal |
                     inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu |
@@ -538,7 +539,6 @@ module ID(
                     inst_lw | inst_lb | inst_lbu | inst_lh | inst_lhu |
                     inst_slt | inst_slti | inst_sltu | inst_sltiu |
                     inst_mfhi | inst_mflo
-
                     ;
 
 

@@ -24,7 +24,7 @@ module EX(
     output wire [31:0] data_sram_wdata,
     output wire ex_id,
     output wire [3:0] data_ram_sel,
-    output wire [`LoadBus-1:0] ex_load_bus
+    output wire [`LoadBus-1:0] ex_load_bus//ex->mem
 );
 
     reg [`ID_TO_EX_WD-1:0] id_to_ex_bus_r;
@@ -67,7 +67,7 @@ module EX(
     wire [4:0] rf_waddr;
     wire sel_rf_res;
     wire [31:0] rf_rdata1, rf_rdata2;
-    reg is_in_delayslot;
+    reg is_in_delayslot;//是否在延迟槽
     wire [3:0] byte_sel;
 
     assign {
@@ -84,11 +84,11 @@ module EX(
         rf_rdata1,         // 63:32
         rf_rdata2          // 31:0
     } = id_to_ex_bus_r;
-
+    //立即数扩展
     wire [31:0] imm_sign_extend, imm_zero_extend, sa_zero_extend;
     assign imm_sign_extend = {{16{inst[15]}},inst[15:0]};
-    assign imm_zero_extend = {16'b0, inst[15:0]};
-    assign sa_zero_extend = {27'b0,inst[10:6]};
+    assign imm_zero_extend = {16'b0, inst[15:0]};//无符号
+    assign sa_zero_extend = {27'b0,inst[10:6]};//移位
 
     wire [31:0] alu_src1, alu_src2;
     wire [31:0] alu_result, ex_result;
@@ -183,18 +183,11 @@ module EX(
 
     assign data_ram_sel =   inst_sb | inst_lb | inst_lbu ? byte_sel :
                             inst_sh | inst_lh | inst_lhu ? {{2{byte_sel[2]}},{2{byte_sel[0]}}} :
-                            inst_sw | inst_lw ? 4'b1111 : 4'b0000; 
+                            inst_sw | inst_lw ? 4'b1111 : 4'b0000; //字节
     assign data_sram_en = data_ram_en;
 
     assign data_sram_wen = {4{data_ram_wen}} & data_ram_sel;
-    // assign data_sram_wen = inst_sw ? 4'b1111:
-    //                     inst_sb & alu_result[1:0]==2'b00 ? 4'b0001:
-    //                     inst_sb & alu_result[1:0]==2'b01 ? 4'b0010:
-    //                     inst_sb & alu_result[1:0]==2'b10 ? 4'b0100:
-    //                     inst_sb & alu_result[1:0]==2'b11 ? 4'b1000:
-    //                     inst_sh & alu_result[1:0]==2'b00 ? 4'b0011:
-    //                     inst_sh & alu_result[1:0]==2'b10 ? 4'b1100:
-    //                     4'b0000;
+
     assign data_sram_addr = ex_result;
     // 根据写地址的最低两位addr[1:0]判断    
     
@@ -202,9 +195,7 @@ module EX(
                                 inst_sh ? {2{rf_rdata2[15:0]}} : rf_rdata2;
 
 
-    // assign ex_result =  inst_mfhi ? hi :
-    //                     inst_mflo ? lo :
-    //                     alu_result;
+
     assign ex_hi_lo_bus = {
         hi_we,
         lo_we,
@@ -251,7 +242,7 @@ module EX(
         .opdata2_i    (div_opdata2_o    ),
         .start_i      (div_start_o      ),
         .annul_i      (1'b0      ),
-        .result_o     (div_result     ), // 除法结果 64bit
+        .result_o     (div_result     ), 
         .ready_o      (div_ready_i      )
     );
 
@@ -304,13 +295,6 @@ module EX(
                     else if (div_ready_i == `DivResultReady) begin
                         div_opdata1_o = rf_rdata1;
                         div_opdata2_o = rf_rdata2;
-                        div_start_o = `DivStop;
-                        signed_div_o = 1'b0;
-                        stallreq_for_div = `NoStop;
-                    end
-                    else begin
-                        div_opdata1_o = `ZeroWord;
-                        div_opdata2_o = `ZeroWord;
                         div_start_o = `DivStop;
                         signed_div_o = 1'b0;
                         stallreq_for_div = `NoStop;
