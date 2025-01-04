@@ -53,9 +53,9 @@ module ID(
 
     always @ (posedge clk) begin
         if (rst) begin
-            if_to_id_bus_r <= `IF_TO_ID_WD'b0;
+            if_to_id_bus_r <= `IF_TO_ID_WD'b0; 
             flag <= 1'b0;    
-            buf_inst <= 32'b0;        
+            buf_inst <= 32'b0;
         end
         // else if (flush) begin
         //     ic_to_id_bus <= `IC_TO_ID_WD'b0;
@@ -65,12 +65,16 @@ module ID(
             flag <= 1'b0; 
         end
         else if (stall[1]==`NoStop) begin
-            flag <= 1'b1;
             if_to_id_bus_r <= if_to_id_bus;
+            flag <= 1'b0; 
         end
+        else if (stall[1]==`Stop && stall[2]==`Stop && ~flag) begin
+            flag <= 1'b1;
+            buf_inst <= inst_sram_rdata;
+        end        
     end
     
-    assign inst = inst_sram_rdata;
+    assign inst = ce ? flag ? buf_inst : inst_sram_rdata : 32'b0;
     assign {
         ex_rf_we,
         ex_rf_waddr,

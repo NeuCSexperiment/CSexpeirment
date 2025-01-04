@@ -1,4 +1,5 @@
 `include "defines.vh"
+//32个32位通用寄存器
 module regfile(
     input wire clk,
     input wire [4:0] raddr1,
